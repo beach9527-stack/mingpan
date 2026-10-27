@@ -147,6 +147,7 @@ DATA.forEach(function(c, i){
 
 function setCat(i, scroll){
   curCat = i;
+  qEl.value = '';
   var chips = catsEl.children;
   for (var j = 0; j < chips.length; j++) {
     chips[j].className = 'chip' + ((j === i + 1) ? ' on' : '');
@@ -165,7 +166,7 @@ function render(){
   var capped = false;
   listEl.textContent = '';
   DATA.forEach(function(c, ci){
-    if (curCat >= 0 && curCat !== ci) return;
+    if (!q && curCat >= 0 && curCat !== ci) return;
     var items = c.items.filter(function(it){
       if (!q) return true;
       return (it.t + it.b + it.k + c.name).indexOf(q) !== -1;
