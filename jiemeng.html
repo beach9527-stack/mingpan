@@ -44,6 +44,7 @@
   }
   .intro b{color:var(--ink)}
   .toolbar{position:sticky;top:0;background:var(--page);padding:10px 0;z-index:5;border-bottom:1px solid var(--line)}
+.hotwords{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 0 2px;font-size:13px}
   .searchrow{display:flex;gap:8px}
   .gobtn{flex:0 0 auto;border:1px solid var(--cinnabar);background:var(--cinnabar);color:#fff;font-size:16px;padding:0 18px;border-radius:4px;touch-action:manipulation}
   .hint{font-size:13px;color:var(--ink-soft);margin:10px 2px 0}
@@ -110,6 +111,7 @@
         <input id="q" type="search" enterkeyhint="search" placeholder="搜一个梦：如 蛇、水、牙、飞、火、鱼……" autocomplete="off">
         <button id="go" class="gobtn" type="button">搜索</button>
       </div>
+      <div class="hotwords" id="hotwords"><span>常搜：</span><button type="button" class="chip" data-q="蛇">蛇</button><button type="button" class="chip" data-q="怀孕">怀孕</button><button type="button" class="chip" data-q="掉牙">掉牙</button><button type="button" class="chip" data-q="考试">考试</button><button type="button" class="chip" data-q="结婚">结婚</button><button type="button" class="chip" data-q="发财">发财</button><button type="button" class="chip" data-q="死人">死人</button><button type="button" class="chip" data-q="棺材">棺材</button><button type="button" class="chip" data-q="水">水</button><button type="button" class="chip" data-q="火">火</button><button type="button" class="chip" data-q="升官">升官</button><button type="button" class="chip" data-q="吵架">吵架</button></div>
     </div>
     <div class="cats" id="cats"></div>
     <div class="hint">点上面类目只看该类；输入梦中事物点“搜索”或按回车。</div>
@@ -161,11 +163,115 @@ function sealClass(g){
 }
 
 var SYN = {
-  '发财': ['财','得财'], '怀孕': ['孕'], '考试': ['科举'], '老公': ['丈夫'],
-  '老婆': ['妻'], '孩子': ['子','儿'], '房子': ['屋','宅','房'],
-  '结婚': ['婚','娶','嫁'], '当官': ['官'], '升职': ['升','官'],
-  '生病': ['病','疾'], '掉牙': ['齿落','齿','牙'], '死人': ['死','亡'],
-  '钱': ['钱','财','银'], '哭': ['哭','泣'], '喝酒': ['饮酒','酒'], '吃饭': ['食']
+  '发财': ['财', '得财', '钱', '银'],
+  '怀孕': ['孕', '孕妇'],
+  '考试': ['科举'],
+  '生孩子': ['产'],
+  '掉牙': ['齿落', '齿', '牙'],
+  '结婚': ['婚', '娶', '嫁'],
+  '离婚': ['离', '别', '休'],
+  '生病': ['病', '疾'],
+  '死人': ['死', '亡', '丧', '棺'],
+  '当官': ['官', '贵', '升', '禄'],
+  '升职': ['升', '官', '迁'],
+  '升官': ['升', '官', '贵'],
+  '房子': ['屋', '宅', '房', '居'],
+  '买房': ['屋', '宅', '房'],
+  '孩子': ['子', '儿'],
+  '老公': ['丈夫', '夫'],
+  '老婆': ['妻', '妇'],
+  '钱': ['钱', '财', '银'],
+  '车': ['车', '马'],
+  '吵架': ['骂', '争', '斗', '口舌'],
+  '打架': ['斗', '争', '殴'],
+  '哭': ['哭', '泣'],
+  '笑': ['笑'],
+  '吃饭': ['食'],
+  '喝酒': ['饮酒', '酒'],
+  '蛇': ['蛇'],
+  '狗': ['犬'],
+  '猫': ['猫'],
+  '鸟': ['鸟', '禽'],
+  '鱼': ['鱼'],
+  '水': ['水'],
+  '火': ['火'],
+  '血': ['血', '见血'],
+  '棺材': ['棺'],
+  '鬼': ['鬼'],
+  '佛': ['佛', '寺', '庙', '神'],
+  '旅行': ['行', '远行', '游'],
+  '上学': ['学', '书', '读'],
+  '游泳': ['浮', '渡'],
+  '飞机': ['飞'],
+  '头发': ['发'],
+  '掉头发': ['发'],
+  '眼睛': ['目'],
+  '手': ['手'],
+  '脚': ['足', '脚'],
+  '工作': ['官', '事', '业'],
+  '生意': ['市', '利'],
+  '小偷': ['盗', '贼'],
+  '强盗': ['盗', '贼'],
+  '下雨': ['雨'],
+  '下雪': ['雪'],
+  '太阳': ['日', '阳'],
+  '月亮': ['月'],
+  '星星': ['星'],
+  '大海': ['海'],
+  '山': ['山'],
+  '树': ['树', '木', '林'],
+  '花': ['花'],
+  '草': ['草'],
+  '桥': ['桥'],
+  '路': ['路', '道'],
+  '船': ['船', '渡'],
+  '马': ['马'],
+  '牛': ['牛'],
+  '猪': ['猪', '豕'],
+  '鸡': ['鸡'],
+  '鸭': ['鸭'],
+  '龙': ['龙'],
+  '虎': ['虎'],
+  '狼': ['狼'],
+  '猴': ['猴', '猿'],
+  '兔': ['兔'],
+  '老鼠': ['鼠'],
+  '虫': ['虫'],
+  '米': ['米', '饭'],
+  '面': ['面'],
+  '菜': ['菜', '瓜'],
+  '肉': ['肉'],
+  '水果': ['果', '瓜', '桃', '梨'],
+  '衣服': ['衣', '衫', '袍', '冠', '带'],
+  '鞋': ['鞋', '履', '靴'],
+  '帽子': ['帽', '冠', '巾'],
+  '镜子': ['镜'],
+  '刀': ['刀', '剑', '刃'],
+  '剑': ['剑', '刀'],
+  '钟': ['钟', '鼓'],
+  '书': ['书'],
+  '笔': ['笔', '砚'],
+  '床': ['床', '帐', '席'],
+  '桌子': ['案', '几', '桌'],
+  '门': ['门', '户'],
+  '墙': ['墙'],
+  '井': ['井'],
+  '厕所': ['厕'],
+  '厨房': ['厨', '灶', '鼎'],
+  '洗澡': ['浴', '洗', '沐'],
+  '理发': ['剪', '剃'],
+  '生气': ['怒'],
+  '害怕': ['恐', '惊', '怕'],
+  '高兴': ['喜', '乐', '欢'],
+  '老人': ['老'],
+  '小孩': ['儿'],
+  '女人': ['女', '妇', '妻', '妾'],
+  '男人': ['男', '夫'],
+  '皇帝': ['帝', '王', '君', '圣'],
+  '皇后': ['后', '妃'],
+  '和尚': ['僧', '道', '尼'],
+  '道士': ['道', '仙'],
+  '神仙': ['仙', '神']
 };
 function expandTerms(q){
   var terms = [q], used = [];
@@ -200,19 +306,20 @@ function render(){
   listEl.textContent = '';
   DATA.forEach(function(c, ci){
     if (!q && curCat >= 0 && curCat !== ci) return;
-    var items = c.items.filter(function(it){
-      if (!q) return true;
-      var hay = it.t + it.b + it.k + c.name;
-      return terms.some(function(t){ return hay.indexOf(t) !== -1; });
-    });
-    if (q && !items.length) {
-      var ct = charTerms(q);
-      items = c.items.filter(function(it){
-        var hay = it.t + it.b + it.k + c.name;
-        return ct.some(function(t){ return hay.indexOf(t) !== -1; });
-      });
-      if (items.length) fuzzy = true;
+    function scoreItems(termList){
+      return c.items.map(function(it){
+        var hay = it.t + it.b + it.k + c.name, sc = 0;
+        if (q) termList.forEach(function(t){ if (hay.indexOf(t) !== -1) sc++; });
+        return {it: it, sc: sc};
+      }).filter(function(x){ return !q || x.sc > 0; });
     }
+    var scored = scoreItems(terms);
+    if (q && !scored.length) {
+      scored = scoreItems(charTerms(q));
+      if (scored.length) fuzzy = true;
+    }
+    scored.sort(function(a, b){ return b.sc - a.sc; });
+    var items = scored.map(function(x){ return x.it; });
     if (!items.length) return;
     var h = document.createElement('h2');
     h.className = 'cathead';
@@ -291,6 +398,13 @@ qEl.addEventListener('keydown', function(e){
   if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
 });
 document.getElementById('go').onclick = function(){ doSearch(); };
+var hwEl = document.getElementById('hotwords');
+if (hwEl) hwEl.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('button[data-q]') : null;
+  if (!b) return;
+  qEl.value = b.getAttribute('data-q');
+  doSearch();
+});
 render();
 </script>
 </body>
