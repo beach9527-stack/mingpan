@@ -45,6 +45,9 @@
   .intro b{color:var(--ink)}
   .toolbar{position:sticky;top:0;background:var(--page);padding:10px 0;z-index:5;border-bottom:1px solid var(--line)}
 .hotwords{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 0 2px;font-size:13px}
+.searchrow{position:relative}
+.sug{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--page);border:1px solid var(--line);z-index:9;max-height:240px;overflow:auto}
+.sug button{display:block;width:100%;text-align:left;padding:8px 10px;background:none;border:0;font:inherit;cursor:pointer}
   .searchrow{display:flex;gap:8px}
   .gobtn{flex:0 0 auto;border:1px solid var(--cinnabar);background:var(--cinnabar);color:#fff;font-size:16px;padding:0 18px;border-radius:4px;touch-action:manipulation}
   .hint{font-size:13px;color:var(--ink-soft);margin:10px 2px 0}
@@ -110,6 +113,7 @@
       <div class="searchrow">
         <input id="q" type="search" enterkeyhint="search" placeholder="搜一个梦：如 蛇、水、牙、飞、火、鱼……" autocomplete="off">
         <button id="go" class="gobtn" type="button">搜索</button>
+        <div id="sug" class="sug" hidden></div>
       </div>
       <div class="hotwords" id="hotwords"><span>常搜：</span><button type="button" class="chip" data-q="蛇">蛇</button><button type="button" class="chip" data-q="怀孕">怀孕</button><button type="button" class="chip" data-q="掉牙">掉牙</button><button type="button" class="chip" data-q="考试">考试</button><button type="button" class="chip" data-q="结婚">结婚</button><button type="button" class="chip" data-q="发财">发财</button><button type="button" class="chip" data-q="死人">死人</button><button type="button" class="chip" data-q="棺材">棺材</button><button type="button" class="chip" data-q="水">水</button><button type="button" class="chip" data-q="火">火</button><button type="button" class="chip" data-q="升官">升官</button><button type="button" class="chip" data-q="吵架">吵架</button></div>
     </div>
@@ -296,6 +300,36 @@ function charTerms(q){
   }
   return out;
 }
+function makeCard(it){
+  var card = document.createElement('div');
+  card.className = 'card';
+  var r1 = document.createElement('div');
+  r1.className = 'row1';
+  var orig = document.createElement('span');
+  orig.className = 'orig';
+  orig.textContent = it.t;
+  var seal = document.createElement('span');
+  seal.className = sealClass(it.g);
+  seal.textContent = it.g;
+  r1.appendChild(orig);
+  r1.appendChild(seal);
+  card.appendChild(r1);
+  var p = document.createElement('p');
+  p.className = 'plain';
+  p.textContent = it.b;
+  card.appendChild(p);
+  if (it.n) {
+    var n = document.createElement('p');
+    n.className = 'note';
+    n.textContent = '注：' + it.n;
+    card.appendChild(n);
+  }
+  var k = document.createElement('p');
+  k.className = 'keys';
+  k.textContent = it.k;
+  card.appendChild(k);
+  return card;
+}
 function render(){
   var rawQ = qEl.value.trim();
   var q = normalizeQuery(rawQ);
@@ -331,34 +365,7 @@ function render(){
     items.forEach(function(it){
       if (q && shown >= 100) { capped = true; return; }
       shown++;
-      var card = document.createElement('div');
-      card.className = 'card';
-      var r1 = document.createElement('div');
-      r1.className = 'row1';
-      var orig = document.createElement('span');
-      orig.className = 'orig';
-      orig.textContent = it.t;
-      var seal = document.createElement('span');
-      seal.className = sealClass(it.g);
-      seal.textContent = it.g;
-      r1.appendChild(orig);
-      r1.appendChild(seal);
-      card.appendChild(r1);
-      var p = document.createElement('p');
-      p.className = 'plain';
-      p.textContent = it.b;
-      card.appendChild(p);
-      if (it.n) {
-        var n = document.createElement('p');
-        n.className = 'note';
-        n.textContent = '注：' + it.n;
-        card.appendChild(n);
-      }
-      var k = document.createElement('p');
-      k.className = 'keys';
-      k.textContent = it.k;
-      card.appendChild(k);
-      listEl.appendChild(card);
+      listEl.appendChild(makeCard(it));
     });
   });
   var total = 0;
@@ -377,15 +384,59 @@ function render(){
       b.onclick = function(){ qEl.value = w; doSearch(); };
       emptyEl.appendChild(b);
     });
+    var nb = curCat >= 0 ? DATA[curCat] : DATA[0];
+    var nh = document.createElement('h2');
+    nh.className = 'cathead';
+    nh.textContent = '没找到完全对得上的，本类目（' + nb.name + '）里有这些：';
+    listEl.appendChild(nh);
+    nb.items.slice(0, 12).forEach(function(it){ listEl.appendChild(makeCard(it)); });
   } else {
     emptyEl.textContent = '没有找到相关条目，换个词试试。';
   }
 }
 function doSearch(){
+  if (sugEl) sugEl.hidden = true;
   render(); qEl.blur();
   if (listEl.scrollIntoView) { listEl.scrollIntoView(); }
 }
 
+var sugEl = document.getElementById('sug');
+var SUGS = (function(){
+  var seen = {}, out = [];
+  DATA.forEach(function(c){
+    c.items.forEach(function(it){
+      it.k.split(/[、，,]/).forEach(function(w){
+        w = w.trim();
+        if (w && !seen[w]) { seen[w] = 1; out.push(w); }
+      });
+    });
+  });
+  Object.keys(SYN).forEach(function(w){ if (!seen[w]) { seen[w] = 1; out.push(w); } });
+  return out;
+})();
+function updateSug(){
+  var q = normalizeQuery(qEl.value.trim());
+  if (!q || composing || !sugEl) { if (sugEl) { sugEl.hidden = true; sugEl.textContent = ''; } return; }
+  var pref = [], cont = [];
+  SUGS.forEach(function(w){
+    if (w.indexOf(q) === 0) pref.push(w);
+    else if (w.indexOf(q) !== -1) cont.push(w);
+  });
+  var list = pref.concat(cont).slice(0, 8);
+  if (!list.length) { sugEl.hidden = true; sugEl.textContent = ''; return; }
+  sugEl.textContent = '';
+  list.forEach(function(w){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = w;
+    b.addEventListener('mousedown', function(e){ e.preventDefault(); qEl.value = w; sugEl.hidden = true; doSearch(); });
+    sugEl.appendChild(b);
+  });
+  sugEl.hidden = false;
+}
+document.addEventListener('click', function(e){
+  if (sugEl && !sugEl.hidden && !(e.target.closest && e.target.closest('.searchrow'))) sugEl.hidden = true;
+});
 var composing = false, deb = null;
 function scheduleRender(){
   if (deb) clearTimeout(deb);
@@ -394,8 +445,10 @@ function scheduleRender(){
 qEl.addEventListener('compositionstart', function(){ composing = true; });
 qEl.addEventListener('compositionend', function(){ composing = false; render(); });
 qEl.addEventListener('input', function(){ if (!composing) scheduleRender(); });
+qEl.addEventListener('input', function(){ if (!composing) updateSug(); });
 qEl.addEventListener('keydown', function(e){
   if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
+  if (e.key === 'Escape' && sugEl) sugEl.hidden = true;
 });
 document.getElementById('go').onclick = function(){ doSearch(); };
 var hwEl = document.getElementById('hotwords');
