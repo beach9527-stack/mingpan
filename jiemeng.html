@@ -176,11 +176,25 @@ function expandTerms(q){
   });
   return {terms: terms, used: used};
 }
+var STOPCHARS = '的了么呢啊我你他个在是和梦见到做昨晚';
+function normalizeQuery(raw){
+  var q = raw.trim();
+  q = q.replace(/(梦见|梦到|做梦|昨晚|我梦)/g, '').replace(/\s+/g, '');
+  return q;
+}
+function charTerms(q){
+  var out = [];
+  for (var i = 0; i < q.length; i++) {
+    var ch = q.charAt(i);
+    if (STOPCHARS.indexOf(ch) === -1 && out.indexOf(ch) === -1) out.push(ch);
+  }
+  return out;
+}
 function render(){
   var rawQ = qEl.value.trim();
-  var q = rawQ.replace(/^(梦见|梦到|梦)/, '');
+  var q = normalizeQuery(rawQ);
   var ex = q ? expandTerms(q) : {terms: [], used: []};
-  var terms = ex.terms, usedTerms = ex.used;
+  var terms = ex.terms, usedTerms = ex.used, fuzzy = false;
   var shown = 0;
   var capped = false;
   listEl.textContent = '';
@@ -191,6 +205,14 @@ function render(){
       var hay = it.t + it.b + it.k + c.name;
       return terms.some(function(t){ return hay.indexOf(t) !== -1; });
     });
+    if (q && !items.length) {
+      var ct = charTerms(q);
+      items = c.items.filter(function(it){
+        var hay = it.t + it.b + it.k + c.name;
+        return ct.some(function(t){ return hay.indexOf(t) !== -1; });
+      });
+      if (items.length) fuzzy = true;
+    }
     if (!items.length) return;
     var h = document.createElement('h2');
     h.className = 'cathead';
@@ -234,7 +256,7 @@ function render(){
   });
   var total = 0;
   DATA.forEach(function(c){ total += c.items.length; });
-  countEl.textContent = '共 ' + total + ' 条 · 当前显示 ' + shown + ' 条' + (capped ? '（仅显示前 100 条，请加关键词缩小范围）' : '') + (usedTerms.length ? '（已按古词扩展：' + usedTerms.join('、') + '）' : '');
+  countEl.textContent = '共 ' + total + ' 条 · 当前显示 ' + shown + ' 条' + (capped ? '（仅显示前 100 条，请加关键词缩小范围）' : '') + (usedTerms.length ? '（已按古词扩展：' + usedTerms.join('、') + '）' : '') + (fuzzy ? '（按单字模糊匹配）' : '');
   emptyEl.hidden = shown !== 0;
   if (shown === 0 && q) {
     emptyEl.textContent = '';
