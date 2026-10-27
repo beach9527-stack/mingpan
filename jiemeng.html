@@ -160,8 +160,27 @@ function sealClass(g){
   return g === '吉' ? 'seal ji' : (g === '凶' ? 'seal xiong' : 'seal qing');
 }
 
+var SYN = {
+  '发财': ['财','得财'], '怀孕': ['孕'], '考试': ['科举'], '老公': ['丈夫'],
+  '老婆': ['妻'], '孩子': ['子','儿'], '房子': ['屋','宅','房'],
+  '结婚': ['婚','娶','嫁'], '当官': ['官'], '升职': ['升','官'],
+  '生病': ['病','疾'], '掉牙': ['齿落','齿','牙'], '死人': ['死','亡'],
+  '钱': ['钱','财','银'], '哭': ['哭','泣'], '喝酒': ['饮酒','酒'], '吃饭': ['食']
+};
+function expandTerms(q){
+  var terms = [q], used = [];
+  Object.keys(SYN).forEach(function(k){
+    if (q.indexOf(k) !== -1) {
+      SYN[k].forEach(function(t){ if (terms.indexOf(t) === -1) { terms.push(t); used.push(t); } });
+    }
+  });
+  return {terms: terms, used: used};
+}
 function render(){
-  var q = qEl.value.trim();
+  var rawQ = qEl.value.trim();
+  var q = rawQ.replace(/^(梦见|梦到|梦)/, '');
+  var ex = q ? expandTerms(q) : {terms: [], used: []};
+  var terms = ex.terms, usedTerms = ex.used;
   var shown = 0;
   var capped = false;
   listEl.textContent = '';
@@ -169,7 +188,8 @@ function render(){
     if (!q && curCat >= 0 && curCat !== ci) return;
     var items = c.items.filter(function(it){
       if (!q) return true;
-      return (it.t + it.b + it.k + c.name).indexOf(q) !== -1;
+      var hay = it.t + it.b + it.k + c.name;
+      return terms.some(function(t){ return hay.indexOf(t) !== -1; });
     });
     if (!items.length) return;
     var h = document.createElement('h2');
@@ -214,8 +234,27 @@ function render(){
   });
   var total = 0;
   DATA.forEach(function(c){ total += c.items.length; });
-  countEl.textContent = '共 ' + total + ' 条 · 当前显示 ' + shown + ' 条' + (capped ? '（仅显示前 100 条，请加关键词缩小范围）' : '');
+  countEl.textContent = '共 ' + total + ' 条 · 当前显示 ' + shown + ' 条' + (capped ? '（仅显示前 100 条，请加关键词缩小范围）' : '') + (usedTerms.length ? '（已按古词扩展：' + usedTerms.join('、') + '）' : '');
   emptyEl.hidden = shown !== 0;
+  if (shown === 0 && q) {
+    emptyEl.textContent = '';
+    var tip = document.createElement('span');
+    tip.textContent = '没有找到含「' + q + '」的条目，试试古词：';
+    emptyEl.appendChild(tip);
+    ['孕','官','财','蛇','龙','病'].forEach(function(w){
+      var b = document.createElement('button');
+      b.className = 'chip';
+      b.textContent = w;
+      b.onclick = function(){ qEl.value = w; doSearch(); };
+      emptyEl.appendChild(b);
+    });
+  } else {
+    emptyEl.textContent = '没有找到相关条目，换个词试试。';
+  }
+}
+function doSearch(){
+  render(); qEl.blur();
+  if (listEl.scrollIntoView) { listEl.scrollIntoView(); }
 }
 
 var composing = false, deb = null;
@@ -227,9 +266,9 @@ qEl.addEventListener('compositionstart', function(){ composing = true; });
 qEl.addEventListener('compositionend', function(){ composing = false; render(); });
 qEl.addEventListener('input', function(){ if (!composing) scheduleRender(); });
 qEl.addEventListener('keydown', function(e){
-  if (e.key === 'Enter') { e.preventDefault(); render(); qEl.blur(); }
+  if (e.key === 'Enter') { e.preventDefault(); doSearch(); }
 });
-document.getElementById('go').onclick = function(){ render(); qEl.blur(); };
+document.getElementById('go').onclick = function(){ doSearch(); };
 render();
 </script>
 </body>
