@@ -178,7 +178,10 @@ function setCat(i){
   for (var j = 0; j < chips.length; j++) {
     chips[j].className = 'chip' + ((j === i + 1) ? ' on' : '');
   }
+  var prevY = (typeof window !== 'undefined' && window.scrollY) || 0;
   refreshResults();
+  var maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+  if (window.scrollTo) window.scrollTo(0, Math.min(prevY, maxY));
   scrollChipIntoView(i);
 }
 
@@ -410,7 +413,7 @@ function computeRows(){
   var scored = [];
   DATA.forEach(function(c, ci){
     c.items.forEach(function(it, ii){
-      var hay = it.t + it.b + it.k + c.name, sc = 0;
+      var hay = it.t + it.b + it.k, sc = 0;
       ex.terms.forEach(function(t){ if (hay.indexOf(t) !== -1) sc++; });
       if (sc > 0) scored.push({it: it, cat: c, sc: sc, ord: ci * 10000 + ii});
     });
@@ -420,7 +423,7 @@ function computeRows(){
     var ct = charTerms(q);
     DATA.forEach(function(c, ci){
       c.items.forEach(function(it, ii){
-        var hay = it.t + it.b + it.k + c.name, sc = 0;
+        var hay = it.t + it.b + it.k, sc = 0;
         ct.forEach(function(t){ if (hay.indexOf(t) !== -1) sc++; });
         if (sc > 0) scored.push({it: it, cat: c, sc: sc, ord: ci * 10000 + ii});
       });
@@ -552,10 +555,14 @@ var SUGS = (function(){
 function updateSug(){
   var q = normalizeQuery(qEl.value.trim());
   if (!q || composing || !sugEl) { if (sugEl) { sugEl.hidden = true; sugEl.textContent = ''; } return; }
-  var pref = [], cont = [];
-  SUGS.forEach(function(w){
-    if (w.indexOf(q) === 0) pref.push(w);
-    else if (w.indexOf(q) !== -1) cont.push(w);
+  var keys = [q].concat(expandTerms(q).terms.slice(1));
+  var pref = [], cont = [], seenSug = {};
+  keys.forEach(function(k){
+    SUGS.forEach(function(w){
+      if (seenSug[w]) return;
+      if (w.indexOf(k) === 0) { pref.push(w); seenSug[w] = 1; }
+      else if (w.indexOf(k) !== -1) { cont.push(w); seenSug[w] = 1; }
+    });
   });
   var list = pref.concat(cont).slice(0, 8);
   if (!list.length) { sugEl.hidden = true; sugEl.textContent = ''; return; }
