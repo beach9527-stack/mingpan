@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>起名 · AI 命盘馆</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"PingFang SC","Microsoft YaHei",sans-serif; background:#f6f1e7; color:#333; padding:16px 12px 40px; }
+  .wrap { max-width:520px; margin:0 auto; }
+  .back { display:inline-block; color:#b03a2e; text-decoration:none; font-size:14px; margin-bottom:8px; }
+  header { text-align:center; margin-bottom:18px; }
+  header h1 { font-size:24px; letter-spacing:6px; color:#7a2a20; }
+  header p { color:#8a7a5f; margin-top:6px; font-size:13px; }
+  .card { background:#fffdf8; border:1px solid #e7dcc6; border-radius:12px; padding:16px; margin-bottom:14px; }
+  .card h2 { font-size:16px; color:#7a2a20; margin-bottom:10px; }
+  label { font-size:14px; color:#6b5b41; display:block; margin:10px 0 4px; }
+  input[type=text], input[type=date], select { width:100%; padding:10px; border:1px solid #d8cbb0; border-radius:8px; font-size:16px; background:#fff; }
+  .sexrow { display:flex; gap:8px; margin-top:4px; }
+  .sexrow label { flex:1; text-align:center; border:1px solid #d8cbb0; border-radius:8px; padding:10px; cursor:pointer; margin:0; }
+  .sexrow input { display:none; }
+  .sexrow input:checked + span { color:#b03a2e; font-weight:bold; }
+  .sexrow label:has(input:checked) { border-color:#b03a2e; background:#fdf3f1; }
+  .btn { display:block; width:100%; padding:13px; background:#b03a2e; color:#fff; border:none; border-radius:8px; font-size:17px; letter-spacing:4px; cursor:pointer; margin-top:14px; }
+  .btn2 { background:#fff; color:#b03a2e; border:1px solid #b03a2e; }
+  .note { font-size:12.5px; color:#8a7a5f; line-height:1.8; }
+  .warn { font-size:13px; color:#8a5a00; background:#fdf6e3; border:1px solid #e7d9a8; border-radius:8px; padding:10px 12px; line-height:1.8; margin-top:10px; }
+  .namecard { border:1px solid #e7dcc6; border-radius:10px; padding:12px 14px; margin-top:10px; background:#fff; }
+  .namecard .nm { font-size:20px; color:#7a2a20; font-weight:bold; letter-spacing:2px; }
+  .namecard .tags { margin-top:6px; }
+  .tag { display:inline-block; font-size:12px; color:#6b5b41; border:1px solid #d8cbb0; border-radius:20px; padding:2px 8px; margin-right:6px; }
+  .tag.wx { color:#b03a2e; border-color:#b03a2e; }
+  .tag.xi { color:#fff; background:#b03a2e; border-color:#b03a2e; }
+  .namecard .quote { font-size:14px; color:#4a3b28; line-height:1.8; margin-top:8px; }
+  .namecard .mean { font-size:13.5px; color:#6b5b41; line-height:1.8; margin-top:4px; }
+  .pillars { display:flex; gap:8px; margin-top:10px; }
+  .pillar { flex:1; text-align:center; border:1px solid #e7dcc6; border-radius:8px; padding:8px 0; background:#fff; }
+  .pillar .pl { font-size:12px; color:#8a7a5f; }
+  .pillar .pz { font-size:19px; color:#7a2a20; font-weight:bold; letter-spacing:2px; }
+  .pillar .pw { font-size:12px; color:#6b5b41; }
+  .wxbar { margin-top:8px; }
+  .wxrow { display:flex; align-items:center; gap:8px; font-size:13px; margin-top:6px; }
+  .wxrow .wl { width:18px; color:#6b5b41; }
+  .wxrow .bar { flex:1; height:10px; background:#efe8d6; border-radius:5px; overflow:hidden; }
+  .wxrow .bar i { display:block; height:100%; background:#b03a2e; }
+  .wxrow .wv { width:38px; text-align:right; color:#6b5b41; }
+  .seclabel { font-size:12px; color:#b03a2e; letter-spacing:2px; margin-top:14px; }
+  footer { text-align:center; color:#a08d64; font-size:12px; margin-top:22px; line-height:1.9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 返回命盘馆</a>
+  <header>
+    <h1>起名字</h1>
+    <p>文学起名 · 八字五行起名 ｜ 名字寓意取自古典文献</p>
+  </header>
+
+  <div class="card">
+    <h2>一、文学起名</h2>
+    <label for="surA">姓</label>
+    <input type="text" id="surA" placeholder="例如：李" maxlength="2">
+    <label>性别</label>
+    <div class="sexrow">
+      <label><input type="radio" name="sexA" value="m" checked><span>男孩</span></label>
+      <label><input type="radio" name="sexA" value="f"><span>女孩</span></label>
+    </div>
+    <button class="btn" id="btnA">出候选名</button>
+    <div id="resA"></div>
+    <button class="btn btn2" id="btnA2" style="display:none">换一批</button>
+    <p class="note" style="margin-top:10px">候选名取自《诗经》《楚辞》《论语》《周易》四部公版原文，每条都注明出处原文与篇名。同一批里不再重复出现。</p>
+  </div>
+
+  <div class="card">
+    <h2>二、八字五行起名</h2>
+    <label for="surB">姓</label>
+    <input type="text" id="surB" placeholder="例如：李" maxlength="2">
+    <label>性别</label>
+    <div class="sexrow">
+      <label><input type="radio" name="sexB" value="m" checked><span>男孩</span></label>
+      <label><input type="radio" name="sexB" value="f"><span>女孩</span></label>
+    </div>
+    <label for="birthDate">出生日期（阳历）</label>
+    <input type="date" id="birthDate" min="1900-01-01" max="2100-12-31">
+    <label for="birthHour">出生时辰</label>
+    <select id="birthHour">
+      <option value="">不清楚（只排年月日三柱）</option>
+      <option value="0">子时 23:00–00:59</option>
+      <option value="1">丑时 01:00–02:59</option>
+      <option value="2">寅时 03:00–04:59</option>
+      <option value="3">卯时 05:00–06:59</option>
+      <option value="4">辰时 07:00–08:59</option>
+      <option value="5">巳时 09:00–10:59</option>
+      <option value="6">午时 11:00–12:59</option>
+      <option value="7">未时 13:00–14:59</option>
+      <option value="8">申时 15:00–16:59</option>
+      <option value="9">酉时 17:00–18:59</option>
+      <option value="10">戌时 19:00–20:59</option>
+      <option value="11">亥时 21:00–22:59</option>
+    </select>
+    <button class="btn" id="btnB">排盘并起名</button>
+    <div id="resB"></div>
+    <p class="note" style="margin-top:10px">五行旺衰为简化估算、仅供参考：年柱以立春为界（近似取 2 月 4 日）、月柱以节气日为界（固定日期近似）、日柱以 1900 年 1 月 1 日甲戌为锚推算、23:00 后归次日；计分法与本站八字排盘一致（天干各计 1，地支藏干按本气 1、中气 0.5、余气 0.3 加权）。出生在节气交界前后两天内的，月柱或年柱可能差一柱，请以专业排盘复核。五行属性为传统汉字五行归属、供参考。</p>
+  </div>
+
+  <footer>
+    名字寓意取自古典文献，五行部分为传统说法，不作命运断言。<br>
+    词库原文均为公版古籍文本（《诗经》《楚辞》《论语》《周易》），寓意为本站自撰。<br>
+    本工具仅供参考与自我了解，不构成医疗、投资、法律等任何专业建议。
+  </footer>
+</div>
+
+<script>
+"use strict";
+/* 词库：[名字, 来源, 篇名, 出处原文, 寓意, 性别(m男/f女/a通用), 首字五行] */
+/* 出处原文均当场核对过公版原文（劝学网《诗经》《楚辞》《论语》全文页；《周易》本经双源对校库）；核不到的条目已删。 */
+var LEX = [
+/* 《诗经》 */
+["淑",0,"关雎","关关雎鸠，在河之洲。窈窕淑女，君子好逑。","温和美好，品行端方。","f","水"],
+["萋",0,"葛覃","葛之覃兮，施于中谷，维叶萋萋。","草木繁茂，生机盎然。","f","木"],
+["蓁",0,"桃夭","桃之夭夭，其叶蓁蓁。","枝叶茂盛，家室兴旺。","f","木"],
+["灼",0,"桃夭","桃之夭夭，灼灼其华。","花开明艳，光彩照人。","f","火"],
+["游",0,"汉广","汉有游女，不可求思。","举止从容，气质清雅。","f","水"],
+["霏",0,"采薇","昔我往矣，杨柳依依。今我来思，雨雪霏霏。","雪落轻柔，心思细腻。","f","水"],
+["柳",0,"采薇","昔我往矣，杨柳依依。","柔韧依依，情意绵长。","f","木"],
+["彤",0,"静女","静女其娈，贻我彤管。","色泽红亮，情意珍重。","f","火"],
+["琼",0,"木瓜","投我以木瓜，报之以琼琚。","美玉为报，情谊贵重。","f","土"],
+["瑶",0,"木瓜","投我以木桃，报之以琼瑶。","美玉温润，情意长久。","f","土"],
+["悠",0,"子衿","青青子衿，悠悠我心。","思念绵长，心境悠远。","a","火"],
+["伊",0,"蒹葭","所谓伊人，在水一方。","水边佳人，清雅可望。","f","土"],
+["苍",0,"蒹葭","蒹葭苍苍，白露为霜。","秋色苍茫，意境高远。","a","木"],
+["德",0,"鹿鸣","我有嘉宾，德音孔昭。","德行彰明，声名美好。","a","火"],
+["嘉",0,"鹿鸣","我有嘉宾，鼓瑟吹笙。","美好尊贵，宾朋满堂。","m","土"],
+["同",0,"无衣","岂曰无衣？与子同袍。","同心同袍，患难与共。","m","土"],
+["阔",0,"击鼓","死生契阔，与子成说。","生死相约，信守不渝。","m","水"],
+["干",0,"兔罝","赳赳武夫，公侯干城。","如盾如城，护国卫家。","m","金"],
+["麟",0,"麟之趾","麟之趾，振振公子，于嗟麟兮。","仁兽之德，贵而不骄。","m","火"],
+["委",0,"羔羊","退食自公，委蛇委蛇。","从容舒展，进退有度。","m","木"],
+["星",0,"小星","嘒彼小星，三五在东。","星光虽微，夜行不止。","m","火"],
+["耿",0,"柏舟","耿耿不寐，如有隐忧。","心思清明，操守不改。","a","火"],
+["池",0,"燕燕","燕燕于飞，差池其羽。","羽翼舒展，远行安然。","f","水"],
+["江",0,"江汉","江汉浮浮，武夫滔滔。","江河浩荡，气势充沛。","m","水"],
+["洸",0,"江汉","江汉汤汤，武夫洸洸。","武勇威仪，气概昂扬。","m","水"],
+["芾",0,"甘棠","蔽芾甘棠，勿剪勿伐。","树荫庇人，德泽长存。","a","木"],
+["樛",0,"樛木","南有樛木，葛藟累之。","枝干下垂，福泽绵延。","m","木"],
+["棘",0,"凯风","凯风自南，吹彼棘心。","母恩劬劳，知恩感怀。","a","木"],
+["心",0,"谷风","黾勉同心，不宜有怒。","同心同德，和睦相处。","a","火"],
+["美",0,"简兮","云谁之思？西方美人。","美好可思，令人向往。","f","土"],
+["琢",0,"淇奥","有匪君子，如切如磋，如琢如磨。","精雕细琢，修身不止。","m","土"],
+["磨",0,"淇奥","有匪君子，如切如磋，如琢如磨。","切磋琢磨，精益求精。","m","土"],
+["竹",0,"淇奥","瞻彼淇奥，绿竹猗猗。","竹节清直，品格高洁。","m","木"],
+["升",0,"天保","如月之恒，如日之升。","如日初升，前程光明。","m","火"],
+["松",0,"天保","如松柏之茂，无不尔或承。","松柏长青，福寿绵长。","m","木"],
+["南",0,"天保","如南山之寿，不骞不崩。","南山不移，寿福安稳。","m","火"],
+["湛",0,"湛露","湛湛露斯，匪阳不晞。","露水晶莹，德行清朗。","f","水"],
+["菁",0,"菁菁者莪","菁菁者莪，在彼中阿。","草木菁菁，人才济济。","f","木"],
+["锡",0,"菁菁者莪","既见君子，锡我百朋。","厚赐百朋，交谊深厚。","m","金"],
+["光",0,"庭燎","夜如何其？夜未央，庭燎之光。","庭燎之光，照亮前路。","a","火"],
+["玉",0,"鹤鸣","他山之石，可以攻玉。","借石攻玉，精进不止。","m","土"],
+["皎",0,"白驹","皎皎白驹，食我场苗。","皎洁明亮，品行如玉。","a","金"],
+["昭",0,"文王","文王在上，于昭于天。","光明昭著，德被天下。","m","火"],
+["新",0,"文王","周虽旧邦，其命维新。","旧邦新命，日新不已。","m","金"],
+["音",0,"思齐","大姒嗣徽音，则百斯男。","徽音美名，代代相传。","f","土"],
+["显",0,"假乐","假乐君子，显显令德。","令德显明，受人敬仰。","m","火"],
+["申",0,"假乐","受禄于天，保右命之，自天申之。","天命申锡，福禄绵长。","m","金"],
+["穆",0,"维天之命","维天之命，于穆不已。","肃穆深远，生生不已。","a","木"],
+["芹",0,"泮水","思乐泮水，薄采其芹。","采芹水边，好学勤勉。","f","木"],
+["汤",0,"玄鸟","古帝命武汤，正域彼四方。","武汤受命，四方归正。","m","水"],
+["清",0,"清庙","于穆清庙，肃雍显相。","清静肃穆，礼敬有加。","a","水"],
+["文",0,"清庙","济济多士，秉文之德。","文德在身，济济多士。","m","水"],
+["未",0,"庭燎","夜如何其？夜未央。","长夜未央，光明将至。","a","木"],
+["央",0,"庭燎","夜如何其？夜未央。","夜虽未央，终将天明。","a","土"],
+/* 《楚辞》 */
+["正则",1,"离骚","名余曰正则兮，字余曰灵均。","名正言顺，行端表正。","m","金"],
+["灵均",1,"离骚","名余曰正则兮，字余曰灵均。","灵秀均和，德才兼备。","m","火"],
+["修",1,"离骚","纷吾既有此内美兮，又重之以修能。","内美修能，德业并进。","m","金"],
+["兰",1,"离骚","扈江离与辟芷兮，纫秋兰以为佩。","秋兰为佩，芳洁自持。","f","木"],
+["露",1,"离骚","朝饮木兰之坠露兮，夕餐秋菊之落英。","饮露餐英，清高自守。","f","水"],
+["英",1,"离骚","朝饮木兰之坠露兮，夕餐秋菊之落英。","秋菊落英，品格清华。","f","木"],
+["未悔",1,"离骚","亦余心之所善兮，虽九死其犹未悔。","心之所善，九死不悔。","m","火"],
+["芙蓉",1,"离骚","制芰荷以为衣兮，集芙蓉以为裳。","芙蓉为裳，洁净高雅。","f","木"],
+["陆离",1,"离骚","高余冠之岌岌兮，长余佩之陆离。","佩饰陆离，光彩斑斓。","m","土"],
+["昭质",1,"离骚","芳与泽其杂糅兮，唯昭质其犹未亏。","昭质未亏，清白不改。","a","火"],
+["求索",1,"离骚","路曼曼其修远兮，吾将上下而求索。","路远求索，上下不止。","m","水"],
+["容与",1,"离骚","忽吾行此流沙兮，遵赤水而容与。","容与徜徉，从容自在。","a","土"],
+["芳菲",1,"离骚","佩缤纷其繁饰兮，芳菲菲其弥章。","芳香弥彰，美名远播。","f","木"],
+["霓裳",1,"九歌·东君","青云衣兮白霓裳，举长矢兮射天狼。","云霓为裳，气度超凡。","f","水"],
+["蕙带",1,"九歌·少司命","荷衣兮蕙带，儵而来兮忽而逝。","荷衣蕙带，神采飘然。","f","木"],
+["壹志",1,"九章·橘颂","深固难徙，更壹志兮。","根深志专，始终如一。","m","土"],
+["秉德",1,"九章·橘颂","秉德无私，参天地兮。","秉德无私，可参天地。","m","木"],
+["沧浪",1,"渔父","沧浪之水清兮，可以濯吾缨。","沧浪之水，随遇而安。","m","水"],
+["瑾瑜",1,"九章·怀沙","怀瑾握瑜兮，穷不知所示。","怀瑾握瑜，美玉在身。","a","土"],
+["桑",1,"九歌·东君","暾将出兮东方，照吾槛兮扶桑。","日出扶桑，光明初升。","m","木"],
+["天狼",1,"九歌·东君","青云衣兮白霓裳，举长矢兮射天狼。","长矢射狼，志气昂扬。","m","火"],
+["师长",1,"九章·橘颂","年岁虽少，可师长兮。","年少可师，德行服人。","m","金"],
+["奇服",1,"九章·涉江","余幼好此奇服兮，年既老而不衰。","奇服不衰，初心不改。","m","木"],
+["宝璐",1,"九章·涉江","被明月兮佩宝璐。","明月宝璐，光华在身。","f","土"],
+["端",1,"九章·涉江","苟余心其端直兮，虽僻远之何伤。","心存端直，无惧僻远。","m","火"],
+["濯缨",1,"渔父","沧浪之水清兮，可以濯吾缨。","水清濯缨，洁身自好。","m","水"],
+["好修",1,"离骚","民生各有所乐兮，余独好修以为常。","独好修洁，以为常道。","m","水"],
+/* 《论语》 */
+["时习",2,"学而","学而时习之，不亦说乎？","时时温习，学有所乐。","m","火"],
+["不愠",2,"学而","人不知而不愠，不亦君子乎？","人不知而不愠，君子之度。","m","火"],
+["三省",2,"学而","吾日三省吾身。","日日三省，修身不怠。","m","金"],
+["温良",2,"学而","夫子温良恭俭让以得之。","温良恭俭，谦和有礼。","a","水"],
+["知新",2,"为政","温故而知新，可以为师矣。","温故知新，可为人师。","m","火"],
+["思齐",2,"里仁","见贤思齐焉，见不贤而内自省也。","见贤思齐，见不贤自省。","m","金"],
+["彬彬",2,"雍也","文质彬彬，然后君子。","文质兼备，彬彬君子。","m","木"],
+["乐水",2,"雍也","知者乐水，仁者乐山。","智者乐水，灵动通达。","m","水"],
+["不倦",2,"述而","默而识之，学而不厌，诲人不倦。","诲人不倦，乐于助人。","m","木"],
+["温厉",2,"述而","子温而厉，威而不猛，恭而安。","温和而严正，威而不猛。","m","火"],
+["弘毅",2,"泰伯","士不可以不弘毅，任重而道远。","弘大刚毅，任重道远。","m","水"],
+["任重",2,"泰伯","士不可以不弘毅，任重而道远。","任重在肩，道远不辞。","m","金"],
+["道远",2,"泰伯","士不可以不弘毅，任重而道远。","道远任重，行远自迩。","m","火"],
+["不惑",2,"子罕","知者不惑，仁者不忧，勇者不惧。","智慧明达，心无疑惑。","m","火"],
+["克己",2,"颜渊","克己复礼为仁。","克己复礼，归于仁道。","m","木"],
+["复礼",2,"颜渊","克己复礼为仁。","复归于礼，仁道在身。","m","水"],
+["成美",2,"颜渊","君子成人之美，不成人之恶。","成人之美，不成人之恶。","m","金"],
+["泰",2,"子路","君子泰而不骄，小人骄而不泰。","安泰而不骄，舒泰自持。","m","水"],
+["刚毅",2,"子路","刚毅木讷，近仁。","刚毅木讷，近于仁道。","m","金"],
+["利器",2,"卫灵公","工欲善其事，必先利其器。","磨砺其器，善成其事。","m","金"],
+["直",2,"季氏","友直，友谅，友多闻，益矣。","正直敢言，益友良师。","m","火"],
+["多闻",2,"季氏","友直，友谅，友多闻，益矣。","博闻多识，见闻广博。","m","水"],
+["九思",2,"季氏","君子有九思：视思明，听思聪。","九思在心，行事周详。","m","木"],
+["笃志",2,"子张","博学而笃志，切问而近思。","博学笃志，志向坚定。","m","木"],
+["切问",2,"子张","博学而笃志，切问而近思。","切问近思，学问扎实。","m","金"],
+["惠",2,"尧曰","君子惠而不费，劳而不怨。","施惠不费，惠及于人。","f","水"],
+["威",2,"尧曰","君子正其衣冠，尊其瞻视，俨然人望而畏之，斯不亦威而不猛乎？","威仪俨然，令人敬畏。","m","土"],
+/* 《周易》 */
+["自强",3,"乾·大象","天行健，君子以自强不息。","天道刚健，自强不息。","m","火"],
+["不息",3,"乾·大象","天行健，君子以自强不息。","生生不息，奋斗不止。","m","金"],
+["飞龙",3,"乾·九五","飞龙在天，利见大人。","飞龙在天，施展抱负。","m","水"],
+["潜龙",3,"乾·初九","潜龙勿用。","潜龙在渊，待时而动。","m","水"],
+["厚德",3,"坤·大象","地势坤，君子以厚德载物。","厚德载物，包容万物。","m","水"],
+["黄裳",3,"坤·六五","黄裳，元吉。","黄裳在中，文德内蕴。","f","土"],
+["含章",3,"坤·六三","含章可贞，或从王事，无成有终。","含章在内，待时而发。","f","水"],
+["经纶",3,"屯·大象","云雷，屯；君子以经纶。","经纶世务，开创基业。","m","金"],
+["果行",3,"蒙·大象","山下出泉，蒙；君子以果行育德。","果决行动，培育品德。","m","木"],
+["慎言",3,"颐·大象","山下有雷，颐；君子以慎言语，节饮食。","言语谨慎，饮食有节。","m","火"],
+["节饮",3,"颐·大象","山下有雷，颐；君子以慎言语，节饮食。","言语有节，饮食有度。","m","木"],
+["不易",3,"恒·大象","雷风，恒；君子以立不易方。","立身不易其方，持守恒久。","m","火"],
+["见善",3,"益·大象","风雷，益；君子以见善则迁，有过则改。","见善则迁，有过则改。","m","木"],
+["修德",3,"蹇·大象","山上有水，蹇；君子以反身修德。","反身修德，度越艰难。","m","金"],
+["鸣鹤",3,"中孚·九二","鸣鹤在阴，其子和之。","鹤鸣于阴，子声相和。","m","水"],
+["鸿渐",3,"渐·九三","鸿渐于陆，夫征不复。","鸿雁渐进，循序登高。","m","水"],
+["明德",3,"晋·大象","明出地上，晋；君子以自昭明德。","自昭明德，光照于外。","m","火"],
+["正位",3,"鼎·大象","木上有火，鼎；君子以正位凝命。","正位凝命，安守其位。","m","金"],
+["直方",3,"坤·六二","直方大，不习无不利。","正直方大，行事无不利。","m","火"],
+["容民",3,"师·大象","地中有水，师；君子以容民畜众。","包容民众，蓄养众人。","m","土"]
+];
+var SRCNAME = ["《诗经》","《楚辞》","《论语》","《周易》"];
+var GAN = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+var ZHI = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+var ANIMAL = ["鼠","牛","虎","兔","龙","蛇","马","羊","猴","鸡","狗","猪"];
+var GAN_WX = {甲:"木",乙:"木",丙:"火",丁:"火",戊:"土",己:"土",庚:"金",辛:"金",壬:"水",癸:"水"};
+var ZHI_WX = {子:"水",丑:"土",寅:"木",卯:"木",辰:"土",巳:"火",午:"火",未:"土",申:"金",酉:"金",戌:"土",亥:"水"};
+var CANG = {子:["癸"],丑:["己","癸","辛"],寅:["甲","丙","戊"],卯:["乙"],辰:["戊","乙","癸"],巳:["丙","庚","戊"],午:["丁","己"],未:["己","丁","乙"],申:["庚","壬","戊"],酉:["辛"],戌:["戊","辛","丁"],亥:["壬","甲"]};
+var CW = [1.0,0.5,0.3];
+/* 节气界（近似固定日期）：寅2/4 卯3/6 辰4/5 巳5/6 午6/6 未7/7 申8/8 酉9/8 戌10/8 亥11/8 子12/7 丑1/6 */
+var BOUND = [[2,4,2],[3,6,3],[4,5,4],[5,6,5],[6,6,6],[7,7,7],[8,8,8],[9,8,9],[10,8,10],[11,8,11],[12,7,0],[1,6,1]];
+var GEN = {木:"火",火:"土",土:"金",金:"水",水:"木"}; /* X生Y */
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+function hashStr(s){ var h=2166136261; for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); } return h>>>0; }
+function shuffle(arr, seed){
+  var a = arr.slice(), s = seed>>>0;
+  function rnd(){ s^=s<<13; s>>>=0; s^=s>>17; s^=s<<5; s>>>=0; return s/4294967296; }
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function nameCard(sur, e, extraTag){
+  var tags = '<span class="tag">'+SRCNAME[e[1]]+" · "+e[2]+"</span>";
+  tags += '<span class="tag wx">首字五行：'+e[6]+"</span>";
+  if(extraTag) tags += '<span class="tag xi">'+extraTag+"</span>";
+  return '<div class="namecard"><div class="nm">'+esc(sur+e[0])+'</div><div class="tags">'+tags+'</div><div class="quote">“'+e[3]+'”</div><div class="mean">寓意：'+e[4]+"</div></div>";
+}
+/* ---- 文学起名 ---- */
+var poolA = [], idxA = 0, surA = "";
+function runA(){
+  var sur = $("surA").value.trim();
+  if(!sur){ $("resA").innerHTML = '<p class="note" style="margin-top:10px">请先填姓。</p>'; return; }
+  var sex = document.querySelector('input[name="sexA"]:checked').value;
+  surA = sur;
+  poolA = shuffle(LEX.filter(function(e){ return e[5]==="a" || e[5]===sex; }), hashStr(sur+sex));
+  idxA = 0;
+  showA();
+}
+function showA(){
+  var page = poolA.slice(idxA, idxA+12);
+  idxA += page.length;
+  if(idxA >= poolA.length) idxA = 0;
+  $("resA").innerHTML = page.map(function(e){ return nameCard(surA, e, ""); }).join("");
+  $("btnA2").style.display = poolA.length > 12 ? "block" : "none";
+}
+$("btnA").addEventListener("click", runA);
+$("btnA2").addEventListener("click", showA);
+/* ---- 八字简化算法 ---- */
+function daysSinceAnchor(y,m,d){
+  return Math.round((Date.UTC(y,m-1,d)-Date.UTC(1900,0,1))/86400000);
+}
+function calcBazi(y,mo,d,hourIdx){
+  var hourMid = [23,2,4,6,8,10,12,14,16,18,20,22];
+  var h = hourIdx==null ? 12 : hourMid[hourIdx];
+  /* 日柱/时柱用子时分日（23:00 后归次日）；年柱/月柱用钟表日期 */
+  var Y=y,M=mo,D=d;
+  if(h>=23){ var t=new Date(Date.UTC(y,mo-1,d)+86400000); Y=t.getUTCFullYear(); M=t.getUTCMonth()+1; D=t.getUTCDate(); }
+  var solarYear = (mo<2 || (mo===2 && d<4)) ? y-1 : y;
+  var yg = ((solarYear-1984)%10+10)%10, yz = ((solarYear-1984)%12+12)%12;
+  var yearGan = GAN[yg], yearZhi = ZHI[yz];
+  var md = mo*100+d, mb;
+  if(mo===1 || (mo===2 && d<4)){ mb = md>=106 ? 1 : 0; }
+  else { mb = null; for(var i=0;i<BOUND.length;i++){ if(BOUND[i][0]===1) continue; if(md>=BOUND[i][0]*100+BOUND[i][1]) mb=BOUND[i][2]; } }
+  var yinGanIdx = (yg*2+2)%10;
+  var monthGan = GAN[(yinGanIdx+(((mb-2)+12)%12))%10], monthZhi = ZHI[mb];
+  var didx = (daysSinceAnchor(Y,M,D)+10)%60;
+  var dayGan = GAN[didx%10], dayZhi = ZHI[didx%12];
+  var hourGan=null, hourZhi=null;
+  if(hourIdx!=null){
+    var hz = hourIdx;
+    hourGan = GAN[((didx%10)*2+hz)%10]; hourZhi = ZHI[hz];
+  }
+  var scores = {金:0,木:0,水:0,火:0,土:0};
+  var stems = [yearGan,monthGan,dayGan]; if(hourGan) stems.push(hourGan);
+  stems.forEach(function(g){ scores[GAN_WX[g]]+=1.0; });
+  var branches = [yearZhi,monthZhi,dayZhi]; if(hourZhi) branches.push(hourZhi);
+  branches.forEach(function(z){ CANG[z].forEach(function(g,i){ scores[GAN_WX[g]]+=CW[i]; }); });
+  var total = 0; for(var k in scores) total+=scores[k];
+  var pct = {}; for(var k2 in scores) pct[k2]=Math.round(scores[k2]/total*100);
+  /* 喜用：分值最低者；并列取生日主者 */
+  var dayEl = GAN_WX[dayGan], min = 101, cands = [];
+  ["金","木","水","火","土"].forEach(function(el){ if(pct[el]<min){ min=pct[el]; cands=[el]; } else if(pct[el]===min){ cands.push(el); } });
+  var xiyong = cands[0];
+  cands.forEach(function(el){ if(GEN[el]===dayEl) xiyong=el; });
+  var xishen = null;
+  for(var e2 in GEN){ if(GEN[e2]===xiyong){ xishen=e2; break; } }
+  /* 节气交界提醒：距任一节气界（含立春）2 天内，或 2 月 3–5 日 */
+  var near = false;
+  var dn = daysSinceAnchor(y,mo,d);
+  for(var yy=y-1; yy<=y+1; yy++){
+    for(var b=0;b<BOUND.length;b++){
+      var bdn = daysSinceAnchor(yy,BOUND[b][0],BOUND[b][1]);
+      if(Math.abs(dn-bdn)<=2) near=true;
+    }
+  }
+  if(mo===2 && d>=3 && d<=5) near=true;
+  return { pillars:[yearGan+yearZhi, monthGan+monthZhi, dayGan+dayZhi, hourGan?hourGan+hourZhi:"（未填）"],
+    wxStr:[GAN_WX[yearGan]+ZHI_WX[yearZhi], GAN_WX[monthGan]+ZHI_WX[monthZhi], GAN_WX[dayGan]+ZHI_WX[dayZhi], hourGan?GAN_WX[hourGan]+ZHI_WX[hourZhi]:"—"],
+    dayMaster:dayGan, dayEl:dayEl, animal:ANIMAL[yz], pct:pct, xiyong:xiyong, xishen:xishen, near:near, hasHour:hourIdx!=null };
+}
+function runB(){
+  var sur = $("surB").value.trim();
+  var dv = $("birthDate").value;
+  if(!sur){ $("resB").innerHTML = '<p class="note" style="margin-top:10px">请先填姓。</p>'; return; }
+  if(!dv){ $("resB").innerHTML = '<p class="note" style="margin-top:10px">请填写出生日期。</p>'; return; }
+  var parts = dv.split("-").map(Number);
+  if(parts[0]<1900 || parts[0]>2100){ $("resB").innerHTML = '<p class="note" style="margin-top:10px">年份须在 1900–2100 之间。</p>'; return; }
+  var sex = document.querySelector('input[name="sexB"]:checked').value;
+  var hv = $("birthHour").value;
+  var r = calcBazi(parts[0], parts[1], parts[2], hv===""?null:Number(hv));
+  var labels = ["年柱","月柱","日柱","时柱"];
+  var html = '<p class="seclabel">四柱八字（简化估算）</p><div class="pillars">';
+  for(var i=0;i<4;i++) html += '<div class="pillar"><div class="pl">'+labels[i]+'</div><div class="pz">'+r.pillars[i]+'</div><div class="pw">'+r.wxStr[i]+"</div></div>";
+  html += '</div><p class="note" style="margin-top:8px">日主：'+r.dayMaster+"（"+r.dayEl+"）· 生肖："+r.animal+(r.hasHour?"":" · 未填时辰，五行计分只含年月日三柱")+"</p>";
+  html += '<p class="seclabel">五行强弱</p><div class="wxbar">';
+  ["金","木","水","火","土"].forEach(function(el){
+    html += '<div class="wxrow"><span class="wl">'+el+'</span><span class="bar"><i style="width:'+r.pct[el]+'%"></i></span><span class="wv">'+r.pct[el]+"%</span></div>";
+  });
+  html += '</div>';
+  html += '<p class="note" style="margin-top:10px">喜用五行：<b style="color:#b03a2e">'+r.xiyong+"</b>（分值最低）"+(r.xishen?"，喜神："+r.xishen+"（生喜用者）":"")+"。以下只推首字属喜用五行的名字；喜用候选不足时补喜神字，并标注“喜神”。</p>";
+  if(r.near) html += '<div class="warn">提醒：出生日期在节气交界前后两天内（或 2 月 3–5 日立春前后），简化算法的年柱或月柱可能差一柱，喜用判断请以专业排盘复核为准。</div>';
+  var pool = LEX.filter(function(e){ return (e[5]==="a" || e[5]===sex) && e[6]===r.xiyong; });
+  var sup = [];
+  if(pool.length < 6 && r.xishen){
+    sup = LEX.filter(function(e){ return (e[5]==="a" || e[5]===sex) && e[6]===r.xishen; }).slice(0, 6-pool.length);
+  }
+  html += '<p class="seclabel">候选名（喜用：'+r.xiyong+"）</p>";
+  if(pool.length===0) html += '<p class="note" style="margin-top:8px">喜用五行暂无候选，见下方喜神补充。</p>';
+  html += pool.map(function(e){ return nameCard(sur, e, "喜用"); }).join("");
+  if(sup.length){
+    html += '<p class="seclabel">喜神补充（'+r.xishen+"）</p>";
+    html += sup.map(function(e){ return nameCard(sur, e, "喜神"); }).join("");
+  }
+  $("resB").innerHTML = html;
+}
+$("btnB").addEventListener("click", runB);
+</script>
+</body>
+</html>
