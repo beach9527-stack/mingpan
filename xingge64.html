@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>性格 64 型趣味自测</title>
+<!--
+  玄学站内容版 v2（2026-11-03）：以 personality-lab 原型 v1 为底，题目/描述/计分一字未改；只换了命盘馆配色、加了维度说明与复制结果、加了回首页链接。未上线，待 Xu 试过点头再推。
+  做法：30 道自写日常表述题，5 点计分，6 个维度各 5 题，本地计分。
+  维度：E/I、S/N、T/F、J/P、A/O（果断/纠结）、H/C（温暖/高冷），16×2×2=64 种组合。
+  声明：不是官方 MBTI 测验，未使用任何受保护量表的原题、计分与商标名头；
+  不作心理诊断，不给稀有度、不给百分比排名，结果仅供娱乐参考。
+  数据：纯前端本地计算，不上传、不保存，刷新即清。无外部资源、无网络请求。
+-->
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"PingFang SC","Microsoft YaHei",sans-serif; background:#f6f1e7; color:#333; padding:16px 12px 40px; }
+  .wrap { max-width:560px; margin:0 auto; }
+  .back { display:inline-block; color:#b03a2e; text-decoration:none; font-size:14px; margin-bottom:8px; }
+  .dimrow { font-size:13.5px; line-height:1.9; color:#4a3b28; }
+  .dimrow b { color:#7a2a20; }
+  header { text-align:center; margin-bottom:16px; }
+  header h1 { font-size:23px; letter-spacing:2px; color:#7a2a20; }
+  header p { color:#8a7a5f; margin-top:6px; font-size:13px; line-height:1.7; }
+  .card { background:#fffdf8; border:1px solid #e7dcc6; border-radius:12px; padding:16px; margin-bottom:14px; }
+  .card h2 { font-size:16px; color:#7a2a20; margin-bottom:6px; }
+  .card .sub { font-size:13px; color:#8a7a5f; line-height:1.8; margin-bottom:8px; }
+  .disclaimer { font-size:13px; color:#7a4a00; background:#fdf6e3; border:1px solid #e7d9a8; border-radius:8px; padding:10px 12px; line-height:1.8; margin-bottom:14px; }
+  .q { border-top:1px solid #efe6d2; padding:12px 0 4px; }
+  .q:first-of-type { border-top:none; }
+  .q p { font-size:15px; line-height:1.7; margin-bottom:8px; }
+  .q p .no { color:#7a2a20; font-weight:bold; margin-right:6px; }
+  .opts { display:flex; flex-wrap:wrap; gap:8px; }
+  .opts label { flex:1 1 17%; border:1px solid #d8cbb0; border-radius:8px; padding:9px 4px; font-size:13px; text-align:center; cursor:pointer; line-height:1.5; }
+  .opts input { display:none; }
+  .opts label:has(input:checked) { border-color:#7a2a20; background:#fdf3f1; color:#7a2a20; font-weight:bold; }
+  .btn { display:block; width:100%; padding:13px; background:#b03a2e; color:#fff; border:none; border-radius:8px; font-size:17px; letter-spacing:4px; cursor:pointer; margin-top:14px; }
+  .btn2 { background:#fff; color:#b03a2e; border:1px solid #b03a2e; }
+  .note { font-size:12.5px; color:#8a7a5f; line-height:1.8; }
+  .hidden { display:none; }
+  .result-code { font-size:34px; font-weight:bold; color:#7a2a20; letter-spacing:2px; text-align:center; margin:8px 0 4px; }
+  .result-title { text-align:center; font-size:15px; font-weight:bold; margin-bottom:8px; }
+  .result-desc { font-size:14px; line-height:1.9; color:#333; }
+  .bar-row { margin-top:10px; }
+  .bar-row .bar-label { font-size:13px; display:flex; justify-content:space-between; margin-bottom:4px; }
+  .bar-track { height:10px; background:#efe6d2; border-radius:6px; overflow:hidden; }
+  .bar-fill { height:100%; background:#b03a2e; }
+  .bar-mid { font-size:12px; color:#8a7a5f; margin-top:10px; line-height:1.7; }
+  footer { text-align:center; color:#8a9aa1; font-size:12px; margin-top:22px; line-height:1.9; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← 回首页</a>
+  <header>
+    <h1>性格 64 型趣味自测</h1>
+    <p>自编版 · 30 题 · 约 3 分钟</p>
+  </header>
+
+  <div class="disclaimer">
+    本页是自编趣味自测，<b>不是官方 MBTI 测验</b>，题目与计分均为本页自写。结果仅供娱乐参考，<b>不作心理诊断</b>，不给稀有度、不给排名。请按平时真实的样子选，不要按理想中的自己选。
+  </div>
+
+  <div class="card">
+    <h2>先看懂六个字母</h2>
+    <p class="dimrow"><b>第 1 个字母 · 能量：</b>外向爱从人里充电，内向爱从独处里回血。<br><b>第 2 个字母 · 信息：</b>具体先看事实细节，直觉先看可能和联系。<br><b>第 3 个字母 · 决定：</b>逻辑先讲道理对错，感受先顾人情分寸。<br><b>第 4 个字母 · 生活方式：</b>计划喜欢先定下来，灵活喜欢多留口子。<br><b>第 5 个字母 · 拿主意：</b>果断定得快，纠结想得多、定得慢。<br><b>第 6 个字母 · 相处温度：</b>温暖直接表达关心，高冷含蓄、重个人空间。</p>
+    <p class="sub">前四个是老分类的四个维度，后两个是网上流行的自编加法，不是官方新增。结果没有稀有度、不排名。</p>
+  </div>
+
+  <!-- 答题区 -->
+  <div class="card" id="quizCard">
+    <h2>请给每句话打分</h2>
+    <p class="sub">1 = 完全不符合我　2 = 不太符合　3 = 有时符合　4 = 比较符合　5 = 非常符合</p>
+    <div id="questions"></div>
+    <p class="note" id="progress"></p>
+    <button class="btn" id="submitBtn" type="button">看我的结果</button>
+    <p class="note" style="margin-top:10px;">答案只在你的浏览器里计算，不上传、不保存，刷新即清。</p>
+  </div>
+
+  <!-- 结果区 -->
+  <div class="card hidden" id="resultCard">
+    <h2>你的组合</h2>
+    <div class="result-code" id="resultCode"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <p class="result-desc" id="resultDesc"></p>
+    <div id="bars"></div>
+    <p class="bar-mid" id="midNote"></p>
+    <button class="btn btn2" id="retryBtn" type="button">重新测一次</button>
+    <button class="btn btn2" id="copyBtn" type="button">复制结果</button>
+    <p class="note" style="margin-top:10px;">这只是一个按你刚才 30 个回答算出来的组合标签。换一天、换心情，答案可能不一样，不用把它当成定论。</p>
+  </div>
+
+  <footer>自编趣味自测 · 非官方 · 仅供娱乐参考 · 不上传不保存</footer>
+</div>
+
+<script>
+"use strict";
+// 6 个维度，每维 5 题，题目表述均指向该维度的第一个字母（高分 = 第一个字母）。
+var DIMS = [
+  { a:"E", b:"I", aName:"外向", bName:"内向", label:"能量来源" },
+  { a:"S", b:"N", aName:"具体", bName:"直觉", label:"接收信息" },
+  { a:"T", b:"F", aName:"逻辑", bName:"感受", label:"做决定" },
+  { a:"J", b:"P", aName:"计划", bName:"灵活", label:"生活方式" },
+  { a:"A", b:"O", aName:"果断", bName:"纠结", label:"决策风格" },
+  { a:"H", b:"C", aName:"温暖", bName:"高冷", label:"相处温度" }
+];
+// 题目：全部为本页自写的日常表述，未引用任何量表原题。
+var QUESTIONS = [
+  { dim:0, text:"周末有空，我更愿意约朋友出来，而不是一个人在家待着。" },
+  { dim:0, text:"人多的场合，我通常话比较多，气氛越热我越来劲。" },
+  { dim:0, text:"认识新朋友对我来说不费劲，我愿意先开口打招呼。" },
+  { dim:0, text:"一天下来没跟人说话，我会觉得有点闷。" },
+  { dim:0, text:"遇到好玩的事，我第一反应是想跟人分享。" },
+  { dim:1, text:"做事时我更在意眼前的具体步骤，而不是先想很远的可能。" },
+  { dim:1, text:"别人讲事情，我先抓事实和细节，再想它意味着什么。" },
+  { dim:1, text:"我更相信亲眼看到、亲手试过的东西。" },
+  { dim:1, text:"学新东西时，有例子、有操作我学得更快。" },
+  { dim:1, text:"我做决定时，先看手头现成的条件够不够。" },
+  { dim:2, text:"朋友找我拿主意，我先帮他把利弊列清楚。" },
+  { dim:2, text:"有分歧时，我觉得先讲道理比先照顾情绪更重要。" },
+  { dim:2, text:"评价一件事，我先看它合不合理，再想大家感受如何。" },
+  { dim:2, text:"被批评时，我更在意对方说得对不对，而不是语气好不好。" },
+  { dim:2, text:"选方案时，我宁可结果有点冷，也不要糊里糊涂将就。" },
+  { dim:3, text:"出门前我喜欢先列好计划，临时改动会让我别扭。" },
+  { dim:3, text:"事情没定下来，我心里总挂着，想早点有个结论。" },
+  { dim:3, text:"我习惯把东西归位，桌面乱了我干活不顺。" },
+  { dim:3, text:"截止日期前，我倾向提前做完，不喜欢拖到最后。" },
+  { dim:3, text:"约好了时间地点，我希望大家都准时到。" },
+  { dim:4, text:"两个差不多的选择，我能很快拍板，不来回纠结。" },
+  { dim:4, text:"定了的事，我不太反复回想“要不要换一个”。" },
+  { dim:4, text:"买东西时，看中了就下单，很少逛好几轮还拿不定。" },
+  { dim:4, text:"别人问我意见，我能当场给个明确说法。" },
+  { dim:4, text:"机会来了，我倾向先抓住，再边做边调整。" },
+  { dim:5, text:"朋友难过时，我会直接说出来安慰，不藏着。" },
+  { dim:5, text:"我愿意主动关心别人最近怎么样。" },
+  { dim:5, text:"高兴的时候，我藏不住，会直接表现出来。" },
+  { dim:5, text:"跟人相处，我更愿意先释放善意，而不是先观望。" },
+  { dim:5, text:"别人帮了我，我会当面好好谢谢他。" }
+];
+// 16 型基础描述：本页自写，一两句日常口径，不引用任何既有量表解读文本。
+var BASE_DESC = {
+  "ISTJ":"做事踏实、讲规矩，答应的事会按步骤做到位。别人找你办事放心，因为你很少掉链子。",
+  "ISFJ":"细心体贴，记得别人的小事，愿意在背后把事情照顾周全。你不爱抢风头，但缺了你不行。",
+  "INFJ":"心里装着长远的想法，也在意别人的感受。你话不多，但认定的事会默默坚持很久。",
+  "INTJ":"喜欢自己琢磨，想通了再动手。你看问题看得远，不喜欢被催着走、被打断思路。",
+  "ISTP":"动手能力强，遇到问题先试试再说。你不爱啰嗦，工具、机器、流程到了你手里都听话。",
+  "ISFP":"随和温和，喜欢舒服自在的日子。你对美和氛围敏感，不爱跟人争，自己的节奏最重要。",
+  "INFP":"心里有自己的价值排序，在意真诚和意义。你想象力丰富，常常在心里排练另一种生活。",
+  "INTP":"好奇心重，爱拆问题、爱琢磨原理。你可以一个人想很久，想到通了才愿意开口。",
+  "ESTP":"行动派，现场反应快，越是热闹的场面你越自在。你讨厌磨叽，做了再说常常是你的风格。",
+  "ESFP":"热情爱玩，身边有你在气氛就不会冷。你活在当下，喜欢把日子过得有滋有味。",
+  "ENFP":"点子多、兴致高，对人对事都容易投入。你喜欢新的可能，讨厌一成不变的安排。",
+  "ENTP":"爱辩论、爱找新角度，别人觉得难的局你觉得好玩。你点子来得快，落地有时要人推一把。",
+  "ESTJ":"条理清楚、执行力强，团队里你是那个把事推进去的人。你认规矩，也认结果。",
+  "ESFJ":"热心周到，喜欢把大家照顾好。你在意关系和气氛，聚会、节日、问候你都记得。",
+  "ENFJ":"愿意带人、愿意鼓励人，大家有事爱找你商量。你心里有方向，也希望身边的人一起变好。",
+  "ENTJ":"目标感强，敢拍板、敢带队。你习惯先定方向再分工，拖拖拉拉的会让你着急。"
+};
+var SUFFIX_DESC = {
+  "A-H":"果断又温暖：拿主意快，对人也热乎，身边人觉得你又靠谱又好接近。",
+  "A-C":"果断又高冷：拿主意快，话不多，熟了才知道你心里其实有数。",
+  "O-H":"纠结又温暖：想得多、拿主意慢一点，但对人真诚，别人愿意等你想清楚。",
+  "O-C":"纠结又高冷：想得多、话不多，决定之前喜欢自己先想透，不爱被催。"
+};
+var SUFFIX_TITLE = { "A-H":"果断 · 温暖", "A-C":"果断 · 高冷", "O-H":"纠结 · 温暖", "O-C":"纠结 · 高冷" };
+
+var answers = new Array(QUESTIONS.length).fill(0);
+
+function renderQuestions() {
+  var box = document.getElementById("questions");
+  QUESTIONS.forEach(function(q, i) {
+    var div = document.createElement("div");
+    div.className = "q";
+    var p = document.createElement("p");
+    var no = document.createElement("span");
+    no.className = "no";
+    no.textContent = (i + 1) + ".";
+    p.appendChild(no);
+    p.appendChild(document.createTextNode(q.text));
+    div.appendChild(p);
+    var opts = document.createElement("div");
+    opts.className = "opts";
+    for (var v = 1; v <= 5; v++) {
+      (function(val) {
+        var label = document.createElement("label");
+        var input = document.createElement("input");
+        input.type = "radio";
+        input.name = "q" + i;
+        input.value = val;
+        input.addEventListener("change", function() {
+          answers[i] = val;
+          updateProgress();
+        });
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(val + " 分"));
+        opts.appendChild(label);
+      })(v);
+    }
+    div.appendChild(opts);
+    box.appendChild(div);
+  });
+  updateProgress();
+}
+function updateProgress() {
+  var done = answers.filter(function(a) { return a > 0; }).length;
+  document.getElementById("progress").textContent = "已答 " + done + " / " + QUESTIONS.length + " 题";
+}
+function compute() {
+  var sums = [0,0,0,0,0,0];
+  QUESTIONS.forEach(function(q, i) { sums[q.dim] += answers[i]; });
+  var letters = [];
+  var mids = [];
+  sums.forEach(function(sum, d) {
+    if (sum > 15) { letters.push(DIMS[d].a); }
+    else if (sum < 15) { letters.push(DIMS[d].b); }
+    else { letters.push(DIMS[d].a); mids.push(DIMS[d].label); }
+  });
+  var base = letters.slice(0, 4).join("");
+  var suffix = letters[4] + "-" + letters[5];
+  return { sums: sums, letters: letters, base: base, suffix: suffix, code: base + "-" + suffix, mids: mids };
+}
+document.getElementById("submitBtn").addEventListener("click", function() {
+  var missing = [];
+  answers.forEach(function(a, i) { if (a === 0) missing.push(i + 1); });
+  if (missing.length) {
+    alert("还有 " + missing.length + " 题没答：第 " + missing.slice(0, 10).join("、") + (missing.length > 10 ? " 等" : "") + " 题。");
+    return;
+  }
+  var r = compute();
+  document.getElementById("resultCode").textContent = r.code;
+  document.getElementById("resultTitle").textContent = SUFFIX_TITLE[r.suffix];
+  document.getElementById("resultDesc").textContent = BASE_DESC[r.base] + " " + SUFFIX_DESC[r.suffix];
+  var bars = document.getElementById("bars");
+  bars.innerHTML = "";
+  r.sums.forEach(function(sum, d) {
+    var row = document.createElement("div");
+    row.className = "bar-row";
+    var lab = document.createElement("div");
+    lab.className = "bar-label";
+    var left = document.createElement("span");
+    left.textContent = DIMS[d].label + "：" + DIMS[d].aName + " " + DIMS[d].a + " / " + DIMS[d].bName + " " + DIMS[d].b;
+    var right = document.createElement("span");
+    right.textContent = sum + " / 25 分";
+    lab.appendChild(left); lab.appendChild(right);
+    var track = document.createElement("div");
+    track.className = "bar-track";
+    var fill = document.createElement("div");
+    fill.className = "bar-fill";
+    fill.style.width = Math.round(sum / 25 * 100) + "%";
+    track.appendChild(fill);
+    var note = document.createElement("div");
+    note.className = "note";
+    note.textContent = "得分偏向：" + (sum > 15 ? DIMS[d].aName : (sum < 15 ? DIMS[d].bName : DIMS[d].aName + "（正好中间，按第一个字母计）"));
+    row.appendChild(lab); row.appendChild(track); row.appendChild(note);
+    bars.appendChild(row);
+  });
+  document.getElementById("midNote").textContent = r.mids.length
+    ? "提示：以下维度正好 15 分（中间值），结果按第一个字母计：" + r.mids.join("、") + "。"
+    : "";
+  document.getElementById("quizCard").classList.add("hidden");
+  document.getElementById("resultCard").classList.remove("hidden");
+  window.scrollTo(0, 0);
+});
+document.getElementById("retryBtn").addEventListener("click", function() {
+  answers = new Array(QUESTIONS.length).fill(0);
+  document.querySelectorAll('input[type="radio"]').forEach(function(el) { el.checked = false; });
+  updateProgress();
+  document.getElementById("resultCard").classList.add("hidden");
+  document.getElementById("quizCard").classList.remove("hidden");
+  window.scrollTo(0, 0);
+});
+document.getElementById("copyBtn").addEventListener("click", function() {
+  var text = "我的组合是 " + document.getElementById("resultCode").textContent + "（" + document.getElementById("resultTitle").textContent + "）。" + document.getElementById("resultDesc").textContent + " 自编趣味自测，仅供娱乐参考。";
+  function done() { alert("已复制，可以粘贴分享。"); }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, function() { alert(text); });
+  } else { alert(text); }
+});
+renderQuestions();
+</script>
+</body>
+</html>
